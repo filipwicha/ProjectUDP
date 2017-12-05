@@ -1,50 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ProjectUDP
 {
-    public enum Answer
-    {
-        Guessed,
-        notGuessed
-    }
-
     class Packet
     {
-
-        System.Collections.Generic.Dictionary<string, int> collection = new Dictionary<string, int>();
+        Dictionary<string, int> collection = new Dictionary<string, int>();
 
         int leftNumber; //or left lim of range
-        Answer answer;
+        int answer; //1 guesed /  0 not guesed
         int sessionId;
-        int rightNumber;
+        int rightNumber;//optional as correct range of numbers
 
-        StringBuilder datagram;
-        
-        public Packet()
-        {
-            datagram = new StringBuilder();
-
-        }
-
-        public Packet(byte[] received)
-        {
-            datagram = append(Encoding.ASCII.GetString(received));
-        }
-
+        StringBuilder datagram = new StringBuilder();
         byte[] GetBytes()
         {
             return Encoding.ASCII.GetBytes(datagram.ToString());
         }
 
-
         void Serialize()
         {
             collection.Add("LeftNumber", leftNumber);
-            collection.Add("Answer", (int)answer);
+            collection.Add("Answer", answer);
             collection.Add("SessionID", sessionId);
             collection.Add("RightNumber", rightNumber);
 
@@ -56,14 +34,13 @@ namespace ProjectUDP
             }
         }
 
-        void Deserialize()
+        public void Deserialize(byte[] received)
         {
-            string message = "#LeftNumber#$#5#Answer#$#0#SesionID#$#4424412#RightNumber#$#5#";
-            Int32.TryParse(System.Text.RegularExpressions.Regex.Match(message, @"(?<=#LeftNumber#\$#)[0-9]+").Value, leftNumber);
-            Int32.TryParse(System.Text.RegularExpressions.Regex.Match(message, @"(?<=#Answer#\$#)[0-9]+").Value, answer);
-            Int32.TryParse(System.Text.RegularExpressions.Regex.Match(message, @"(?<=#SessionID#\$#)[0-9]+").Value, sessionId);
-            Int32.TryParse(System.Text.RegularExpressions.Regex.Match(message, @"(?<=#RightNumber#\$#)[0-9]+").Value, rightNumber);
+            string message = Encoding.ASCII.GetString(received);
+            Int32.TryParse(System.Text.RegularExpressions.Regex.Match(message, @"(?<=#LeftNumber#\$#)[0-9]+").Value, out leftNumber);
+            Int32.TryParse(System.Text.RegularExpressions.Regex.Match(message, @"(?<=#Answer#\$#)[0-9]+").Value, out answer);
+            Int32.TryParse(System.Text.RegularExpressions.Regex.Match(message, @"(?<=#SessionID#\$#)[0-9]+").Value, out sessionId);
+            Int32.TryParse(System.Text.RegularExpressions.Regex.Match(message, @"(?<=#RightNumber#\$#)[0-9]+").Value, out rightNumber);
         }
-
     }
 }

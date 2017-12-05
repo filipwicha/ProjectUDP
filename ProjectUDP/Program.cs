@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 
 namespace ProjectUDP
 {
@@ -17,7 +13,7 @@ namespace ProjectUDP
             if (Convert.ToInt32(Console.ReadLine()) == 1)
             {
                 client = new Client();
-            }
+            } 
             else
             {
                 server = new Server();
