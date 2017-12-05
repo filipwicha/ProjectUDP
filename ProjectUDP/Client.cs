@@ -2,14 +2,15 @@
 using System.Net;
 using System.Text;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace ProjectUDP
 {
     public class Client
     {
-        const int DEFAULT_PORT = 211;
         UdpClient client;
-        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("127.0.0.1"), DEFAULT_PORT);
+
+        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211);
         public Client()
         {
             client = new UdpClient();
@@ -17,14 +18,20 @@ namespace ProjectUDP
             ClientLoop();
         }
 
-        private async void ClientLoop()
+        private void ClientLoop()
         {
             while (true)
             {
-                var datagram = Encoding.ASCII.GetBytes("Client message");
-                await client.SendAsync(datagram, datagram.Length);
-                var receivedResult = await client.ReceiveAsync();
-                Console.WriteLine(Encoding.ASCII.GetString(receivedResult.Buffer));
+                string line = Console.ReadLine();
+                Packet packet = new Packet();
+                Int32.TryParse(line, out packet.leftNumber);
+                packet.rightNumber = 7;
+                packet.sessionId = 10210412;
+                packet.answer = 1;
+                byte[] tmp = packet.GetBytes();
+                client.SendAsync(tmp, tmp.Length);
+                var receivedResult = client.ReceiveAsync();
+                Console.WriteLine(Encoding.ASCII.GetString(receivedResult.Result.Buffer));
             }
         }
     }

@@ -16,14 +16,16 @@ namespace ProjectUDP
             ServerLoop();
         }
 
-        private async void ServerLoop()
+        private void ServerLoop()
         {
             while (true)
             {
-                var receivedResult = await server.ReceiveAsync();
-                Console.WriteLine(receivedResult.RemoteEndPoint.Port);
+                var receivedResult = server.ReceiveAsync();
+                Packet packet = new Packet();
+                packet.Deserialize(receivedResult.Result.Buffer);
+                Console.WriteLine(packet.leftNumber);
                 var datagram = Encoding.ASCII.GetBytes("Server message");
-                await server.SendAsync(datagram, datagram.Length, receivedResult.RemoteEndPoint);
+                server.SendAsync(datagram, datagram.Length, receivedResult.Result.RemoteEndPoint);
             }
         }
     }

@@ -8,14 +8,15 @@ namespace ProjectUDP
     {
         Dictionary<string, int> collection = new Dictionary<string, int>();
 
-        int leftNumber; //or left lim of range
-        int answer; //1 guesed /  0 not guesed
-        int sessionId;
-        int rightNumber;//optional as correct range of numbers
+        public int leftNumber; //or left lim of range
+        public int answer; //1 guesed /  0 not guesed
+        public int sessionId;
+        public int rightNumber;//optional as correct range of numbers
 
         StringBuilder datagram = new StringBuilder();
-        byte[] GetBytes()
+        public byte[] GetBytes()
         {
+            Serialize();
             return Encoding.ASCII.GetBytes(datagram.ToString());
         }
 
