@@ -24,7 +24,7 @@ namespace ProjectUDP
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Try to guess number in range of {0} and {1}", range.Item1, range.Item2);
+                Console.WriteLine("Try to guess number in range of {0} and {1}", clientInfo.range.Item1, clientInfo.range.Item2);
                 Int32.TryParse(Console.ReadLine(), out packet.leftNumber);
                 Communicate();
                 Console.WriteLine("Guesed" + packet.answer);

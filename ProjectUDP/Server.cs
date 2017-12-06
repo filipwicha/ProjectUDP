@@ -30,9 +30,9 @@ namespace ProjectUDP
 
                 if (packet.sessionId == "")
                 {
-                    clients.Add(new ClientInfo(1, 5, Guid.NewGuid().ToString()));
+                    packet.sessionId = Guid.NewGuid().ToString();
+                    clients.Add(new ClientInfo(1, 5, packet.sessionId));
                 }
-                
 
                 Console.WriteLine("Server received packet:" + packet.leftNumber);
                 var datagram = Encoding.ASCII.GetBytes("Server message");
