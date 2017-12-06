@@ -23,6 +23,7 @@ namespace ProjectUDP
 
         void DisplayCheckedList()
         {
+            alredyChecked.Sort();
             Console.Write("The numbers, you've already checked, are:");
             foreach (var current in alredyChecked)
             {
