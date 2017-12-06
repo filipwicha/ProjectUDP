@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using System.Net.Sockets;
+using System.Collections.Generic;
 
 namespace ProjectUDP
 {
@@ -10,9 +11,12 @@ namespace ProjectUDP
         const int DEFAULT_PORT = 211;
         UdpClient server;
 
+        List<ClientInfo> clients = new List<ClientInfo>();
+        
+
         public Server()
         {
-            server = new UdpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), DEFAULT_PORT));
+            server = new UdpClient(new IPEndPoint(IPAddress.Parse("25.21.58.123"), DEFAULT_PORT));
             ServerLoop();
         }
 
@@ -23,7 +27,14 @@ namespace ProjectUDP
                 var receivedResult = server.ReceiveAsync();
                 Packet packet = new Packet();
                 packet.Deserialize(receivedResult.Result.Buffer);
-                Console.WriteLine(packet.leftNumber);
+
+                if (packet.sessionId == "")
+                {
+                    clients.Add(new ClientInfo(1, 5, Guid.NewGuid().ToString()));
+                }
+                
+
+                Console.WriteLine("Server received packet:" + packet.leftNumber);
                 var datagram = Encoding.ASCII.GetBytes("Server message");
                 server.SendAsync(datagram, datagram.Length, receivedResult.Result.RemoteEndPoint);
             }

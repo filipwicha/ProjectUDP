@@ -2,19 +2,20 @@
 using System.Net;
 using System.Text;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 
 namespace ProjectUDP
 {
     public class Client
     {
         UdpClient client;
+        ClientInfo clientInfo;
+        Packet packet;
 
-        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211);
+        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("25.21.58.123"), 211);
+
         public Client()
         {
-            client = new UdpClient();
-            client.Connect(serverAddres);
+            Connect();
             ClientLoop();
         }
 
@@ -22,17 +23,43 @@ namespace ProjectUDP
         {
             while (true)
             {
-                string line = Console.ReadLine();
-                Packet packet = new Packet();
-                Int32.TryParse(line, out packet.leftNumber);
-                packet.rightNumber = 7;
-                packet.sessionId = 10210412;
-                packet.answer = 1;
-                byte[] tmp = packet.GetBytes();
-                client.SendAsync(tmp, tmp.Length);
-                var receivedResult = client.ReceiveAsync();
-                Console.WriteLine(Encoding.ASCII.GetString(receivedResult.Result.Buffer));
+                Console.Clear();
+                Console.WriteLine("Try to guess number in range of {0} and {1}", range.Item1, range.Item2);
+                Int32.TryParse(Console.ReadLine(), out packet.leftNumber);
+                Communicate();
+                Console.WriteLine("Guesed" + packet.answer);
             }
+        }
+
+        private void Communicate()
+        {
+            byte[] tmp = packet.GetBytes();
+            client.SendAsync(tmp, tmp.Length);
+            var receivedResult = client.ReceiveAsync();
+            packet.Deserialize(receivedResult.Result.Buffer);
+        }
+
+        private void Connect()
+        {
+            client = new UdpClient();
+            client.Connect(serverAddres);
+
+            packet = new Packet();
+            Communicate();
+
+            clientInfo = new ClientInfo(packet.leftNumber, packet.rightNumber, packet.sessionId);
+        }
+    }
+
+    public class ClientInfo
+    {
+        public Tuple<int, int> range;
+        public string sessionId = "";
+
+        public ClientInfo(int leftNumber, int rightNumber, string id)
+        {
+            range = new Tuple<int, int>(leftNumber, leftNumber);
+            sessionId = id;
         }
     }
 }
