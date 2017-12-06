@@ -12,7 +12,6 @@ namespace ProjectUDP
         UdpClient server;
 
         List<ClientInfo> clients = new List<ClientInfo>();
-        
 
         public Server()
         {
@@ -28,13 +27,17 @@ namespace ProjectUDP
                 Packet packet = new Packet();
                 packet.Deserialize(receivedResult.Result.Buffer);
 
-                if (packet.sessionId == "")
+                if (!clients.Exists(x => x.sessionId == packet.sessionId))
                 {
                     packet.sessionId = Guid.NewGuid().ToString();
-                    clients.Add(new ClientInfo(1, 5, packet.sessionId));
+                    Random rand = new Random();
+                    clients.Add(new ClientInfo(1, 5, packet.sessionId, rand.Next(1,5)));
                 }
 
+                ClientInfo client = clients.Find(x => x.sessionId == packet.sessionId);
+                
                 Console.WriteLine("Server received packet:" + packet.leftNumber);
+                
                 var datagram = Encoding.ASCII.GetBytes("Server message");
                 server.SendAsync(datagram, datagram.Length, receivedResult.Result.RemoteEndPoint);
             }

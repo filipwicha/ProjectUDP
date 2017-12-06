@@ -55,11 +55,13 @@ namespace ProjectUDP
     {
         public Tuple<int, int> range;
         public string sessionId = "";
+        public int numberToGuess;
 
-        public ClientInfo(int leftNumber, int rightNumber, string id)
+        public ClientInfo(int leftNumber, int rightNumber, string id, int numberToGuess = 0)
         {
-            range = new Tuple<int, int>(leftNumber, leftNumber);
-            sessionId = id;
+            this.range = new Tuple<int, int>(leftNumber, leftNumber);
+            this.sessionId = id;
+            this.numberToGuess = numberToGuess;
         }
     }
 }

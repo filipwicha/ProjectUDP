@@ -42,7 +42,7 @@ namespace ProjectUDP
             Int32.TryParse(Regex.Match(message, @"(?<=#LeftNumber#\$#)[0-9]+").Value, out leftNumber);
             Int32.TryParse(Regex.Match(message, @"(?<=#RightNumber#\$#)[0-9]+").Value, out rightNumber);
             Int32.TryParse(Regex.Match(message, @"(?<=#Answer#\$#)[0-9]+").Value, out answer);
-            sessionId = Regex.Match(message, @"(?<=#SessionID#\$#)[0-9]+").Value;
+            sessionId = Regex.Match(message, @"(?<=#SessionID#\$#)[a-zA-Z\-0-9]+").Value;
             time = Regex.Match(message, @"(?<=#Time#\$#)[0-9. :]+").Value;
         }
     }
