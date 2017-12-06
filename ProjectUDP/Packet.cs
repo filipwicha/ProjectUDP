@@ -13,12 +13,18 @@ namespace ProjectUDP
         public int answer; //1 guesed /  0 not guesed
         public string sessionId = "";
         public string time { private set; get; }
+        public int length = 0;
 
         StringBuilder datagram = new StringBuilder();
-        public byte[] GetBytes()
+        public byte[] Bytes
         {
-            Serialize();
-            return Encoding.ASCII.GetBytes(datagram.ToString());
+            get
+            {
+                Serialize();
+                byte[] tmp = Encoding.ASCII.GetBytes(datagram.ToString());
+                length = tmp.Length;
+                return tmp;
+            }
         }
 
         void Serialize()

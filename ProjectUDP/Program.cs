@@ -13,12 +13,10 @@ namespace ProjectUDP
             if (Convert.ToInt32(Console.ReadLine()) == 1)
             {
                 client = new Client();
-                Console.WriteLine("Client is about to finish");
             }
             else
             {
                 server = new Server();
-                Console.WriteLine("Client is about to finish");
 
             }
             Console.WriteLine("Program is about to finish");

@@ -26,6 +26,10 @@ namespace ProjectUDP
                 var receivedResult = server.ReceiveAsync();
                 Packet packet = new Packet();
                 packet.Deserialize(receivedResult.Result.Buffer);
+                Packet ack = new Packet();
+                ack.answer = 2;
+                ack.sessionId = packet.sessionId;
+                server.SendAsync(ack.Bytes, ack.length, receivedResult.Result.RemoteEndPoint);
 
                 if (clients.Exists(x => x.sessionId == packet.sessionId))
                 {
@@ -48,8 +52,10 @@ namespace ProjectUDP
                     clients.Add(new ClientInfo(packet.leftNumber, packet.rightNumber, packet.sessionId, rand.Next(1, 5)));
                 }
 
-                byte[] tmp = packet.GetBytes();
-                server.SendAsync(tmp, tmp.Length,receivedResult.Result.RemoteEndPoint);
+
+                server.SendAsync(packet.Bytes, packet.length, receivedResult.Result.RemoteEndPoint);
+                receivedResult = server.ReceiveAsync();
+                Console.WriteLine("ACK received");
             }
         }
     }

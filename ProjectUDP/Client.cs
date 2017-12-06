@@ -69,10 +69,16 @@ namespace ProjectUDP
 
         private void Communicate(Packet packet)
         {
-            byte[] tmp = packet.GetBytes();
-            client.SendAsync(tmp, tmp.Length);
+            client.SendAsync(packet.Bytes, packet.length);
             var receivedResult = client.ReceiveAsync();
+            Console.WriteLine("ACK received");
             packet.Deserialize(receivedResult.Result.Buffer);
+            receivedResult = client.ReceiveAsync();
+            packet.Deserialize(receivedResult.Result.Buffer);
+            Packet ack = new Packet();
+            ack.answer = 2;
+            ack.sessionId = packet.sessionId;
+            client.SendAsync(ack.Bytes, ack.length);
         }
 
         private void Connect()
