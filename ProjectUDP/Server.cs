@@ -27,19 +27,29 @@ namespace ProjectUDP
                 Packet packet = new Packet();
                 packet.Deserialize(receivedResult.Result.Buffer);
 
-                if (!clients.Exists(x => x.sessionId == packet.sessionId))
+                if (clients.Exists(x => x.sessionId == packet.sessionId))
                 {
+                    Console.WriteLine("Server received packet from " + packet.sessionId);
+                    ClientInfo client = clients.Find(x => x.sessionId == packet.sessionId);
+                    if (client.numberToGuess == packet.leftNumber)
+                    {
+                        packet.answer = 1;
+                        Console.WriteLine("Client " + packet.sessionId + " guesed number!");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Client connected!");
+
                     packet.sessionId = Guid.NewGuid().ToString();
+                    packet.leftNumber = 1;
+                    packet.rightNumber = 5;
                     Random rand = new Random();
-                    clients.Add(new ClientInfo(1, 5, packet.sessionId, rand.Next(1,5)));
+                    clients.Add(new ClientInfo(packet.leftNumber, packet.rightNumber, packet.sessionId, rand.Next(1, 5)));
                 }
 
-                ClientInfo client = clients.Find(x => x.sessionId == packet.sessionId);
-                
-                Console.WriteLine("Server received packet:" + packet.leftNumber);
-                
-                var datagram = Encoding.ASCII.GetBytes("Server message");
-                server.SendAsync(datagram, datagram.Length, receivedResult.Result.RemoteEndPoint);
+                byte[] tmp = packet.GetBytes();
+                server.SendAsync(tmp, tmp.Length,receivedResult.Result.RemoteEndPoint);
             }
         }
     }
