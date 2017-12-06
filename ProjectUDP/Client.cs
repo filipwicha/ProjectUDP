@@ -17,7 +17,7 @@ namespace ProjectUDP
 
         public Client()
         {
-            Connect();
+            Connect(); 
             ClientLoop();
         }
 

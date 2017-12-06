@@ -54,12 +54,13 @@ namespace ProjectUDP
 
                     packet.sessionId = Guid.NewGuid().ToString();
                     packet.leftNumber = 1;
-                    packet.rightNumber = 5;
+                    packet.rightNumber = 100;
                     Random rand = new Random();
-                    clients.Add(new ClientInfo(packet.leftNumber, packet.rightNumber, packet.sessionId, rand.Next(1, 5)));
+                    clients.Add(new ClientInfo(packet.leftNumber, packet.rightNumber, packet.sessionId, rand.Next(1, 100)));
                 }
 
                 server.SendAsync(packet.Bytes, packet.length, receivedResult.Result.RemoteEndPoint);
+                Console.WriteLine("Packet sended");
             }
         }
     }
