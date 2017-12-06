@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using System.Net.Sockets;
+using System.Collections.Generic;
 
 namespace ProjectUDP
 {
@@ -11,7 +12,9 @@ namespace ProjectUDP
         ClientInfo clientInfo;
         Packet packet;
 
-        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("25.21.58.123"), 211);
+        List<int> alredyChecked = new List<int>();
+
+        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211);
 
         public Client()
         {
@@ -19,15 +22,42 @@ namespace ProjectUDP
             ClientLoop();
         }
 
+        void DispalyClientMenu()
+        {
+            Console.Write("The numbers, you've already checked, are:");
+            foreach (var current in alredyChecked)
+            {
+                Console.Write(" {0}", current);
+            }
+            Console.Write("\n\n");
+
+        }
+
         private void ClientLoop()
         {
             while (true)
             {
                 Console.Clear();
+                DispalyClientMenu();
+
                 Console.WriteLine("Try to guess number in range of {0} and {1}", clientInfo.range.Item1, clientInfo.range.Item2);
-                Int32.TryParse(Console.ReadLine(), out packet.leftNumber);
+                do
+                {
+                    Int32.TryParse(Console.ReadLine(), out packet.leftNumber);
+                }
+                while (alredyChecked.Contains(packet.leftNumber));
+                alredyChecked.Add(packet.leftNumber);
                 Communicate();
-                Console.WriteLine("Guesed" + packet.answer);
+                if(packet.answer == 0)
+                {
+                    Console.WriteLine("Try again :-)");
+                }
+                else
+                {
+                    Console.WriteLine("Congratulation! You've guessed the number!");
+                    break;
+                }
+                
             }
         }
 
