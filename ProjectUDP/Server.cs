@@ -16,7 +16,7 @@ namespace ProjectUDP
 
         public Server()
         {
-            server = new UdpClient(new IPEndPoint(IPAddress.Parse("25.21.58.123"), DEFAULT_PORT));
+            server = new UdpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), DEFAULT_PORT));
             ServerLoop();
         }
 
