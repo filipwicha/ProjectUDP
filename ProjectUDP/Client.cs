@@ -13,7 +13,7 @@ namespace ProjectUDP
 
         List<int> alredyChecked = new List<int>();
 
-        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211);
+        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("25.21.58.123"), 211);
 
         public Client()
         {
