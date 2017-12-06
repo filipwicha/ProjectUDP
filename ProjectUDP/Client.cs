@@ -72,7 +72,6 @@ namespace ProjectUDP
             client.SendAsync(packet.Bytes, packet.length);
             var receivedResult = client.ReceiveAsync();
             Console.WriteLine("ACK received");
-            packet.Deserialize(receivedResult.Result.Buffer);
             receivedResult = client.ReceiveAsync();
             packet.Deserialize(receivedResult.Result.Buffer);
             Packet ack = new Packet();

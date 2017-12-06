@@ -26,6 +26,13 @@ namespace ProjectUDP
                 var receivedResult = server.ReceiveAsync();
                 Packet packet = new Packet();
                 packet.Deserialize(receivedResult.Result.Buffer);
+
+                if (packet.answer == 2)
+                {
+                    Console.WriteLine("ACK received");
+                    continue;
+                }
+
                 Packet ack = new Packet();
                 ack.answer = 2;
                 ack.sessionId = packet.sessionId;
@@ -53,8 +60,6 @@ namespace ProjectUDP
                 }
 
                 server.SendAsync(packet.Bytes, packet.length, receivedResult.Result.RemoteEndPoint);
-                receivedResult = server.ReceiveAsync();
-                Console.WriteLine("ACK received");
             }
         }
     }
