@@ -9,11 +9,14 @@ namespace ProjectUDP
     public class Client
     {
         UdpClient client;
-        ClientInfo clientInfo;
+
+        int leftNumber = 0;
+        int rightNumber = 0;
+        string sessionId = "";
 
         List<int> alredyChecked = new List<int>();
 
-        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("25.21.58.123"), 211);
+        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211);
 
         public Client()
         {
@@ -40,19 +43,23 @@ namespace ProjectUDP
                 Console.Clear();
                 DisplayCheckedList();
                 Packet packet = new Packet();
-                packet.sessionId = clientInfo.sessionId;
+                packet.sessionId = sessionId;
 
-                Console.WriteLine("Try to guess number in range of {0} and {1}", clientInfo.range.Item1, clientInfo.range.Item2);
+                Console.WriteLine("Try to guess number between {0} and {1}.", leftNumber, rightNumber);
                 do
                 {
-                    Int32.TryParse(Console.ReadLine(), out packet.leftNumber);
+                    Int32.TryParse(Console.ReadLine(), out packet.numberToGues);
                 }
-                while (alredyChecked.Contains(packet.leftNumber));
+                while (alredyChecked.Contains(packet.numberToGues));
 
-                alredyChecked.Add(packet.leftNumber);
+                alredyChecked.Add(packet.numberToGues);
 
                 Communicate(packet);
-                if(packet.answer == 0)
+
+                leftNumber = packet.leftNumber;
+                rightNumber = packet.rightNumber;
+
+                if (packet.answer == 0)
                 {
                     Console.WriteLine("Try again :-)");
                     System.Threading.Thread.Sleep(500);
@@ -64,20 +71,20 @@ namespace ProjectUDP
                     Console.WriteLine("Connection closed!");
                     break;
                 }
-                
             }
         }
 
         private void Communicate(Packet packet)
         {
             client.SendAsync(packet.Bytes, packet.length);
+
             var receivedResult = client.ReceiveAsync();
             Console.WriteLine("ACK received");
+
             receivedResult = client.ReceiveAsync();
             packet.Deserialize(receivedResult.Result.Buffer);
-            Packet ack = new Packet();
-            ack.answer = 2;
-            ack.sessionId = packet.sessionId;
+
+            Packet ack = new Packet(sessionId);
             client.SendAsync(ack.Bytes, ack.length);
         }
 
@@ -86,25 +93,14 @@ namespace ProjectUDP
             client = new UdpClient();
             client.Connect(serverAddres);
             Console.WriteLine("Client connected!");
-
             Packet packet = new Packet();
+            Console.WriteLine("Send number L");
+            Int32.TryParse(Console.ReadLine(), out packet.leftNumber);
             Communicate(packet);
 
-            clientInfo = new ClientInfo(packet.leftNumber, packet.rightNumber, packet.sessionId);
-        }
-    }
-
-    public class ClientInfo
-    {
-        public Tuple<int, int> range;
-        public string sessionId = "";
-        public int numberToGuess;
-
-        public ClientInfo(int leftNumber, int rightNumber, string id, int numberToGuess = 0)
-        {
-            this.range = new Tuple<int, int>(leftNumber, rightNumber);
-            this.sessionId = id;
-            this.numberToGuess = numberToGuess;
+            sessionId = packet.sessionId;
+            leftNumber = packet.leftNumber;
+            rightNumber = packet.rightNumber;
         }
     }
 }

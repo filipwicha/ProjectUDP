@@ -8,14 +8,16 @@ namespace ProjectUDP
 {
     public class Server
     {
-        const int DEFAULT_PORT = 211;
         UdpClient server;
+        List<string> clients = new List<string>();
 
-        List<ClientInfo> clients = new List<ClientInfo>();
+        int leftNumber = 0;
+        int rightNumber = 0;
+        int numberToGues = 0;
 
         public Server()
         {
-            server = new UdpClient(new IPEndPoint(IPAddress.Parse("25.21.58.123"), DEFAULT_PORT));
+            server = new UdpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211));
             ServerLoop();
         }
 
@@ -33,16 +35,13 @@ namespace ProjectUDP
                     continue;
                 }
 
-                Packet ack = new Packet();
-                ack.answer = 2;
-                ack.sessionId = packet.sessionId;
+                Packet ack = new Packet(packet.sessionId);
                 server.SendAsync(ack.Bytes, ack.length, receivedResult.Result.RemoteEndPoint);
 
-                if (clients.Exists(x => x.sessionId == packet.sessionId))
+                if (clients.Exists(x => x == packet.sessionId))
                 {
                     Console.WriteLine("Server received packet from " + packet.sessionId);
-                    ClientInfo client = clients.Find(x => x.sessionId == packet.sessionId);
-                    if (client.numberToGuess == packet.leftNumber)
+                    if (numberToGues == packet.numberToGues)
                     {
                         packet.answer = 1;
                         Console.WriteLine("Client " + packet.sessionId + " guesed number!");
@@ -51,16 +50,33 @@ namespace ProjectUDP
                 else
                 {
                     Console.WriteLine("Client connected!");
-
                     packet.sessionId = Guid.NewGuid().ToString();
-                    packet.leftNumber = 1;
-                    packet.rightNumber = 100;
-                    Random rand = new Random();
-                    clients.Add(new ClientInfo(packet.leftNumber, packet.rightNumber, packet.sessionId, rand.Next(1, 100)));
+
+                    if(clients.Count == 0)
+                    {
+                        leftNumber = packet.leftNumber;
+                    }
+                    else if(clients.Count == 1)
+                    {
+                        rightNumber = packet.leftNumber;
+                    }
+
+                    clients.Add(packet.sessionId);
+
+                    if (clients.Count == 2)
+                    {
+                        Random rand = new Random();
+                        numberToGues = rand.Next(leftNumber, rightNumber);
+                    }
                 }
+                
+                packet.leftNumber = leftNumber;
+                packet.rightNumber = rightNumber;
 
                 server.SendAsync(packet.Bytes, packet.length, receivedResult.Result.RemoteEndPoint);
                 Console.WriteLine("Packet sended");
+
+                Console.WriteLine("Number to gues: " + numberToGues);
             }
         }
     }
