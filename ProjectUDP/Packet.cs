@@ -13,10 +13,10 @@ namespace ProjectUDP
         public int numberToGues =0;//optional as correct range of numbers
         public int answer; //1 guesed /  0 not guesed
         public string sessionId = "";
-        public string time { private set; get; }
+        public string time { private set; get; } //variable with time
         public int length = 0;
 
-        StringBuilder datagram = new StringBuilder();
+        StringBuilder datagram = new StringBuilder(); //temporary string with data
         public byte[] Bytes
         {
             get

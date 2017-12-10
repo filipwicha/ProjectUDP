@@ -8,23 +8,22 @@ namespace ProjectUDP
 {
     public class Client
     {
-        UdpClient client;
+        UdpClient client; //create client
+        int leftNumber = 0; //client information about left range lim
+        int rightNumber = 0; //client information about right range lim
+        string sessionId = ""; //holds sessionId
 
-        int leftNumber = 0;
-        int rightNumber = 0;
-        string sessionId = "";
+        List<int> alredyChecked = new List<int>(); //list of numbers that have been already checked
 
-        List<int> alredyChecked = new List<int>();
-
-        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211);
+        IPEndPoint serverAddres = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211);   //create server endpoint
 
         public Client()
         {
-            Connect(); 
-            ClientLoop();
+            Connect(); //connect and set session id
+            ClientLoop(); //function of a client
         }
 
-        void DisplayCheckedList()
+        void DisplayCheckedList() //shows list of sorted numbers that have been checked
         {
             alredyChecked.Sort();
             Console.Write("The numbers, you've already checked, are:");
@@ -36,13 +35,13 @@ namespace ProjectUDP
 
         }
 
-        private void ClientLoop()
+        private void ClientLoop() 
         {
             while (true)
             {
                 Console.Clear();
                 DisplayCheckedList();
-                Packet packet = new Packet();
+                Packet packet = new Packet(); //create packet
                 packet.sessionId = sessionId;
 
                 Console.WriteLine("Try to guess number between {0} and {1}.", leftNumber, rightNumber);
@@ -52,9 +51,9 @@ namespace ProjectUDP
                 }
                 while (alredyChecked.Contains(packet.numberToGues));
 
-                alredyChecked.Add(packet.numberToGues);
+                alredyChecked.Add(packet.numberToGues); //add number to already checked list
 
-                Communicate(packet);
+                Communicate(packet);  //send packet and wait for ACK 
 
                 leftNumber = packet.leftNumber;
                 rightNumber = packet.rightNumber;
@@ -67,7 +66,7 @@ namespace ProjectUDP
                 else
                 {
                     Console.WriteLine("Congratulation! You've guessed the number!");
-                    client.Close();
+                    client.Close(); //end connection
                     Console.WriteLine("Connection closed!");
                     break;
                 }

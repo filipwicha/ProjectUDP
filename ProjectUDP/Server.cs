@@ -11,23 +11,23 @@ namespace ProjectUDP
         UdpClient server;
         List<string> clients = new List<string>();
 
-        int leftNumber = 0;
-        int rightNumber = 0;
-        int numberToGues = 0;
+        int leftNumber = 0; //server information about left range lim
+        int rightNumber = 0; //server information about right range lim
+        int numberToGues = 0; //number choosen to guess by clients
 
         public Server()
         {
-            server = new UdpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211));
-            ServerLoop();
+            server = new UdpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 211)); //create server with IP and Port number
+            ServerLoop(); //function of a server
         }
 
         private void ServerLoop()
         {
             while (true)
             {
-                var receivedResult = server.ReceiveAsync();
+                var receivedResult = server.ReceiveAsync(); //receive packet
                 Packet packet = new Packet();
-                packet.Deserialize(receivedResult.Result.Buffer);
+                packet.Deserialize(receivedResult.Result.Buffer); //deserialization
 
                 if (packet.answer == 2)
                 {
@@ -36,7 +36,7 @@ namespace ProjectUDP
                 }
 
                 Packet ack = new Packet(packet.sessionId);
-                server.SendAsync(ack.Bytes, ack.length, receivedResult.Result.RemoteEndPoint);
+                server.SendAsync(ack.Bytes, ack.length, receivedResult.Result.RemoteEndPoint); //send ACK
 
                 if (clients.Exists(x => x == packet.sessionId))
                 {
