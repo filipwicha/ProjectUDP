@@ -71,7 +71,7 @@ namespace ProjectUDP
                 }
                 
                 packet.leftNumber = leftNumber;
-                packet.rightNumber = rightNumber;
+                packet.rightNumber = rightNumber; 
 
                 server.SendAsync(packet.Bytes, packet.length, receivedResult.Result.RemoteEndPoint);
                 Console.WriteLine("Packet sended");
